@@ -1,0 +1,139 @@
+﻿# ==============================================================================
+# Configuration File for Replicating Aymeric, Lavaine, and Magdalou (2025)
+#
+# This file contains all parameters required to run the end-to-end replication
+# pipeline for the study "Parental environment and student achievement: Does a
+# Matthew effect exist?".
+# ==============================================================================
+
+# I. DATA SOURCES, SCOPE, AND MEASUREMENT
+data_sources:
+  primary_source_name: "Ministry of Education and Research of Madrid Community (Spain)"
+  instrument_data_source_name: "Educational Attainment Data from Barro and Lee (2013)"
+  scoring_source: "Official PCM-calibrated and scaled scores provided by the Ministry"
+  item_response_used: false
+  country_crosswalk_version: "BL-1960-to-ISO3 v1.0"
+
+study_period:
+  start_year: 2016
+  end_year: 2019
+  grade10_assessed_in_2016: false
+
+population_scope:
+  location: "Madrid Community, Spain"
+  grades_of_interest: [3, 6, 10]
+  ages_approximate: [8, 11, 15]
+  require_parent_response: true
+
+# II. VARIABLE DEFINITIONS AND CONSTRUCTION
+variable_definitions:
+  dependent_variables: ['Score_Math', 'Score_Lit', 'Score_Eng']
+  endogenous_variable: 'PHE'
+  phe_dummy_names: ['p1', 'p2']
+  instrumental_variable: 'GG'
+  effort_variable_raw: 'days_homework_raw'
+  effort_variable_derived: 'days_homework_cat'
+  parental_investment_variables:
+    - 'parent_talk_school'
+    - 'parent_teach_homework'
+    - 'parent_help_homework'
+    - 'parent_check_homework'
+  student_controls:
+    - 'gender'
+    - 'student_cob'
+  household_controls:
+    - 'parent_cob_mother'
+    - 'parent_cob_father'
+    - 'freq_use_books_home'
+    - 'freq_use_computer_home'
+    - 'freq_use_internet_home'
+    - 'books_at_home'
+    - 'employment_status_mother'
+    - 'employment_status_father'
+
+psychometric_model:
+  model_name: "Partial Credit Model (PCM)"
+  scoring_source: "official_ministry_scaled"
+  standardization_mean: 500
+  standardization_std_dev: 100
+  standardization_by: "subject-grade-year"
+  calibration_required: false
+
+parental_education_coding:
+  scheme_name: "ISCED 2011"
+  level_0_raw: [0, 1, 2]
+  level_1_raw: [3, 4, 5]
+  level_2_raw: [6, 7, 8]
+  tie_break_rule: "mother_if_equal"
+
+instrument_construction:
+  year_for_data: 1960
+  formula: "share_tertiary_women_1960 - share_tertiary_men_1960"
+  instrument_missing_policy: "drop"
+  expected_sign_pi1: "negative"
+
+effort_coding:
+  raw_domain: [0, 1, 2, 3, 4, 5, 6, 7]
+  derived_bins:
+    1: "One day or less (0–1)"
+    2: "Two or 3 days (2–3)"
+    3: "Four or 5 days (4–5)"
+    4: "More than 5 days (6–7)"
+  reference_category: 1
+
+parental_investment_coding:
+  scale:
+    1: "Never"
+    2: "1–2 times/month"
+    3: "1–2 times/week"
+    4: "Every or almost every day"
+  reference_category: 1
+
+books_at_home_coding:
+  scale:
+    1: "0–10"
+    2: "11–50"
+    3: "51–100"
+    4: "101–200"
+    5: "More than 200"
+  reference_category: 1
+
+# III. ECONOMETRIC MODEL SPECIFICATIONS
+model_specifications:
+  fixed_effects: ['school_id', 'academic_year']
+  grade_fixed_effect: false
+  grade_pair_definitions: [[3, 6], [6, 10], [3, 10]]
+  interaction_indicator_name: "I(u,v)"
+  ols_equations:
+    first-reg: "y_its = α0 + Σ_{j=1,2} α_j p_{ji} + Σ_k β_k s_{ki} + Σ_k γ_k h_{ki} + a_t + b_s + ε_its"
+    second-reg: "y_igts = α0 + Σ_{j=1,2} α_j p_{ji} + η I(u,v) + Σ_{j=1,2} θ_j (p_{ji} I(u,v)) + Σ_k β_k s_{ki} + Σ_k γ_k h_{ki} + a_t + b_s + ε_igts"
+  iv_equations:
+    IV-reg-first: "PHE_i = π0 + π1 GG_i + Σ_k σ_k s_{ki} + Σ_k λ_k h_{ki} + a_t + b_s + ν_its"
+    IV-reg-second: "y_its = α0 + α1 ĤPHE_i + Σ_k β_k s_{ki} + Σ_k γ_k h_{ki} + a_t + b_s + ε_its"
+    IV-reg-second-interactions: "y_igts = α0 + α1 ĤPHE_i + η I(u,v) + α2 (ĤPHE_i I(u,v)) + Σ_k β_k s_{ki} + Σ_k γ_k h_{ki} + a_t + b_s + ε_igts"
+
+inference_parameters:
+  significance_levels:
+    star_1: 0.10
+    star_2: 0.05
+    star_3: 0.01
+  standard_error_clustering_level: 'school_id'
+  robust_se_type: 'HC1'
+  report_reduced_form: true
+
+iv_validation:
+  weak_instrument_threshold_f_stat: 10.0
+  report_first_stage: true
+
+# IV. SAMPLE POLICIES AND REPRODUCIBILITY
+sample_policies:
+  require_parent_response: true
+  listwise_deletion: true
+  valid_grades: [3, 6, 10]
+  exclude_year_grade:
+    - {academic_year: 2016, grade: 10}
+
+reproducibility:
+  random_seed: 2025
+  logging: true
+  version: "v1.0"

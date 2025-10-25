@@ -1,0 +1,56 @@
+﻿# ==============================================================================
+# Requirements File for "Parental Environment and Student Achievement" Pipeline
+# ==============================================================================
+#
+# Project: Replication of Aymeric, Lavaine, & Magdalou (2025)
+# Paper: "Parental environment and student achievement: Does a Matthew effect exist?"
+# Version: 1.0.0
+# Python: >=3.8,<3.13
+#
+# Installation:
+#   pip install -r requirements.txt
+#
+# For development:
+#   pip install -r requirements.txt -r requirements-dev.txt
+#
+# ==============================================================================
+
+# --- Core Scientific Computing Stack ---
+# numpy: Fundamental package for numerical computing and array operations
+# Version constraint: linearmodels requires numpy>=1.19
+# Using ~= to allow patch updates while maintaining minor version compatibility
+numpy~=1.24.0
+
+# pandas: Data manipulation and analysis library
+# Version constraint: linearmodels requires pandas>=1.1
+# Using ~= for stability across patch versions
+pandas~=2.0.0
+
+# --- Statistical and Econometric Libraries ---
+# scipy: Scientific computing library (required by linearmodels and statsmodels)
+# Used for optimization, linear algebra, and statistical functions
+scipy~=1.10.0
+
+# statsmodels: Statistical modeling library (required by linearmodels)
+# Provides core statistical tests and models used in econometric analysis
+statsmodels~=0.14.0
+
+# linearmodels: Advanced econometric models for panel data
+# Core library for high-dimensional fixed effects OLS and 2SLS estimation
+# Using ~= to maintain compatibility with the specific feature set
+linearmodels~=5.3
+
+# --- Visualization ---
+# matplotlib: Comprehensive library for creating static, animated, and interactive visualizations
+# Used for generating publication-quality coefficient plots and diagnostic figures
+matplotlib~=3.7.0
+
+# --- Optional: Enhanced Visualization (Recommended) ---
+# seaborn: Statistical data visualization built on matplotlib
+# Provides enhanced aesthetics and additional plot types
+# Uncomment if used in the visualization module
+# seaborn~=0.12.0
+
+# ==============================================================================
+# End of requirements.txt
+# ==============================================================================
